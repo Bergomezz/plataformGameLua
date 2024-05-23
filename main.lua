@@ -1,6 +1,7 @@
 function love.load()
   wf = require './lib/windfield/windfield'
   world = wf.newWorld(0,800, false)
+  world:setQueryDebugDrawing(true)
 
   world:addCollisionClass('Platform')
   world:addCollisionClass('Player'--[[, {ignores = {'Platform'}}]])
@@ -40,5 +41,14 @@ end
 function love.keypressed(key)
   if key == 'up' then
     player:applyLinearImpulse(0, -7000)
+  end
+end
+
+function love.mousepressed(x, y, button)
+  if button == 1 then
+    local colliders = world:queryCircleArea(x, y, 200)
+    for i,c in ipairs(colliders) do 
+      c:destroy()
+    end
   end
 end
