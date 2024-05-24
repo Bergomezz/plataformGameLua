@@ -40,3 +40,4 @@ luac.out
 *.hex
 
 lib/windfield
+lib/anim8
