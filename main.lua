@@ -40,7 +40,10 @@ end
 
 function love.keypressed(key)
   if key == 'up' then
-    player:applyLinearImpulse(0, -7000)
+    local colliders = world: queryRectangleArea(player:getX() - 40, player:getY() + 40, 80, 2, {'Platform'})
+    if #colliders > 0 then
+      player:applyLinearImpulse(0, -7000)
+    end
   end
 end
 
