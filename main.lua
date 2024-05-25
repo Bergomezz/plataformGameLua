@@ -3,6 +3,9 @@ function love.load()
 
   anim8 = require 'lib/anim8/anim8'
   sti = require 'lib/Simple-Tiled-Implementation/sti'
+  cameraFile = require 'lib/hump/camera'
+
+  cam = cameraFile()
 
   sprites = {}
   sprites.playerSheet = love.graphics.newImage('/sprites/playerSheet.png')
@@ -37,12 +40,17 @@ function love.update(dt)
   world:update(dt)
   gameMap:update(dt)
   playerUpdate(dt)
+
+  local px, py = player:getPosition()
+  cam:lookAt(px,love.graphics.getHeight()/2)
 end
 
 function love.draw()
-  world:draw()
-  gameMap:drawLayer(gameMap.layers["Tile Layer 1"])
-  drawPlayer()
+  cam:attach()
+    world:draw()
+    gameMap:drawLayer(gameMap.layers["Tile Layer 1"])
+    drawPlayer()
+  cam:detach()
 end
 
 function love.keypressed(key)
