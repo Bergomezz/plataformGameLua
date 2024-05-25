@@ -2,6 +2,7 @@ function love.load()
   love.window.setMode(1000,768)
 
   anim8 = require 'lib/anim8/anim8'
+  sti = require 'lib/Simple-Tiled-Implementation/sti'
 
   sprites = {}
   sprites.playerSheet = love.graphics.newImage('/sprites/playerSheet.png')
@@ -23,26 +24,31 @@ function love.load()
 
   require ('player')
 
-  platform = world:newRectangleCollider(250, 400, 300, 100, {collision_class = "Platform"})
-  platform:setType('static')
-  dangerZone = world:newRectangleCollider(0, 550, 800, 50, {collision_class = "Danger"})
-  dangerZone:setType('static')
+  
+  --dangerZone = world:newRectangleCollider(0, 550, 800, 50, {collision_class = "Danger"})
+  --dangerZone:setType('static')
+
+  platforms = {}
+
+  loadMap()
 end
 
 function love.update(dt)
   world:update(dt)
+  gameMap:update(dt)
   playerUpdate(dt)
 end
 
 function love.draw()
   world:draw()
+  gameMap:drawLayer(gameMap.layers["Tile Layer 1"])
   drawPlayer()
 end
 
 function love.keypressed(key)
   if key == 'up' then
     if player.grounded then
-      player:applyLinearImpulse(0, -4000)
+      player:applyLinearImpulse(0, -5000)
     end
   end
 end
@@ -53,5 +59,21 @@ function love.mousepressed(x, y, button)
     for i,c in ipairs(colliders) do 
       c:destroy()
     end
+  end
+end
+
+function spawnPlatformd (x, y, width, height)
+  if width > 0 and height > 0 then
+    local platform = world:newRectangleCollider(x, y, width, height, {collision_class = "Platform"})
+    platform:setType('static')
+
+    table.insert(platforms,platform)
+  end
+end
+
+function loadMap()
+  gameMap = sti('maps/level1.lua')
+  for i,obj in pairs(gameMap.layers["Platforms"].objects) do
+    spawnPlatformd(obj.x, obj.y, obj.width, obj.height)
   end
 end
